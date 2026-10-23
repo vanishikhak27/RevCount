@@ -1,13 +1,19 @@
+import os
+import sys
 import pytest
 from fastapi.testclient import TestClient
 
-from app.config import Settings, get_settings
-from app.main import app
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from backend.app.main import app
+from backend.app.core.database import init_db
+
+
+@pytest.fixture(scope="session", autouse=True)
+def setup_database():
+    init_db()
 
 
 @pytest.fixture
 def client():
-    app.dependency_overrides[get_settings] = lambda: Settings(app_name="examate-rag", environment="test")
-    with TestClient(app) as c:
-        yield c
-    app.dependency_overrides.clear()
+    return TestClient(app)
