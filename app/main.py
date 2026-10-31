@@ -1,5 +1,6 @@
 import json
 from collections.abc import AsyncIterator
+from datetime import UTC, datetime
 from typing import Annotated
 
 from fastapi import Depends, FastAPI
@@ -23,6 +24,14 @@ def get_llm(settings: SettingsDep) -> AsyncReliableLLM:
 
 LLMDep = Annotated[AsyncReliableLLM, Depends(get_llm)]
 
+usage_totals = {
+    "requests": 0,
+    "input_tokens": 0,
+    "output_tokens": 0,
+    "estimated": False,
+    "cost_usd": 0.0,
+}
+
 @app.get("/hello")
 def say_hello():
     return "hello"
@@ -34,8 +43,17 @@ def say_root():
 @app.get("/health")
 def health(settings: SettingsDep) -> dict:
     """Liveness: the process is up. Must be fast and must not call the LLM or the DB."""
-    return {"status": "ok", "app": settings.app_name, "environment": settings.environment}
+    return {
+        "status": "ok",
+        "app": settings.app_name,
+        "environment": settings.environment,
+        "timestamp": datetime.now(UTC).isoformat(),
+    }
 
+@app.get("/usage")
+def get_usage() -> dict:
+    """Return token and estimated cost totals for this server session."""
+    return usage_totals
 
 def sse(data: dict, event: str | None = None) -> str:
     prefix = f"event: {event}\n" if event else ""
@@ -62,6 +80,24 @@ async def chat(request: ChatRequest, provider: LLMDep) -> StreamingResponse:
         usage_data = usage or {"input_tokens": 0, "output_tokens": 0, "estimated": False}
         if hasattr(usage_data, "__dict__"):
             usage_data = usage_data.__dict__
-        yield sse({"usage": usage_data, "cost_usd": 0.0}, event="done")
+
+        input_tokens = int(usage_data.get("input_tokens", 0))
+        output_tokens = int(usage_data.get("output_tokens", 0))
+        cost_usd = float(usage_data.get("cost_usd", 0.0))
+
+        usage_totals["requests"] += 1
+        usage_totals["input_tokens"] += input_tokens
+        usage_totals["output_tokens"] += output_tokens
+        usage_totals["estimated"] = usage_totals["estimated"] or bool(
+            usage_data.get("estimated", False)
+        )
+        usage_totals["cost_usd"] += cost_usd
+        yield sse(
+            {
+                "usage": usage_data,
+                "cost_usd": cost_usd,
+            },
+            event="done",
+        )
 
     return StreamingResponse(event_stream(), media_type="text/event-stream")
