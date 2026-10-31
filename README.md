@@ -90,3 +90,11 @@ curl localhost:8000/health
 
 ## Live link
 <Added in Week 2>
+
+## Run with Docker Compose
+
+Make sure Docker Desktop is running.
+
+```powershell
+Copy-Item .env.example .env
+docker compose up --build -d

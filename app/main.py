@@ -3,8 +3,9 @@ from collections.abc import AsyncIterator
 from datetime import UTC, datetime
 from typing import Annotated
 
+import psycopg
 from fastapi import Depends, FastAPI
-from fastapi.responses import StreamingResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 
 from app.config import Settings, get_settings
 from app.llm.errors import LLMConfigurationError, LLMUnavailable
@@ -49,7 +50,26 @@ def health(settings: SettingsDep) -> dict:
         "environment": settings.environment,
         "timestamp": datetime.now(UTC).isoformat(),
     }
+@app.get("/ready")
+def ready(settings: SettingsDep):
+    """Readiness: check whether PostgreSQL is reachable."""
+    if not settings.database_url:
+        return JSONResponse(
+            status_code=503,
+            content={"status": "not_ready", "reason": "DATABASE_URL is not configured"},
+        )
 
+    try:
+        with psycopg.connect(settings.database_url, connect_timeout=3) as connection:
+            connection.execute("SELECT 1")
+
+        return {"status": "ready", "database": "connected"}
+
+    except psycopg.Error:
+        return JSONResponse(
+            status_code=503,
+            content={"status": "not_ready", "database": "unavailable"},
+        )
 @app.get("/usage")
 def get_usage() -> dict:
     """Return token and estimated cost totals for this server session."""
