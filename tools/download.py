@@ -11,7 +11,7 @@ import requests
 
 RAW = "data/raw"
 MANIFEST = "data/manifest.csv"
-HEADERS = {"User-Agent": "ExamateStudentProject/1.0 (learning project; contact: vanishikhak27@gmail.com)"}
+HEADERS = {"User-Agent": "ExamateStudentProject/1.0 (learning project; contact: mabhusubhani001@gmail.com)"}
 DELAY = 2 # seconds between requests: be polite to government servers
 robots = {}
 
@@ -23,9 +23,10 @@ def allowed(url):
             rp.read()
         except Exception:
             rp = None # robots.txt unreachable: proceed carefully
-            robots[root] = rp
-            rp = robots[root]
-        return rp is None or rp.can_fetch(HEADERS["User-Agent"], url)
+        robots[root] = rp
+    rp = robots[root]
+    return rp is None or rp.can_fetch(HEADERS["User-Agent"], url)
+
     
 def name_for(url):
     name = os.path.basename(urlparse(url).path) or "index.html"

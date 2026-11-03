@@ -1,11 +1,4 @@
-
-def test_health_check(client):
-    response = client.get("/health")
-
-    assert response.status_code == 200
-
-    data = response.json()
-    assert data["status"] == "ok"
-    assert data["app"] == "RevCount"
-    assert data["environment"]
-    assert "timestamp" in data
+def test_health_is_fast_and_ok(client):
+    r = client.get("/health")
+    assert r.status_code == 200
+    assert r.json() == {"status": "ok", "app": "examate-rag", "environment": "test"}
