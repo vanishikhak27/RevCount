@@ -1,7 +1,8 @@
+.venv
 .env
-venv/
-.git/
-.pytest_cache/
-.ruff_cache/
-__pycache__/
-*.pyc
+data/raw
+.git
+__pycache__
+.pytest_cache
+.ruff_cache
+logs
