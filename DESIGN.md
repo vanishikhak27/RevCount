@@ -269,6 +269,3 @@ These tables are proposed and have not yet been created.
 6\. Calculate API costs using verified model pricing.
 
 7\. Deploy the API and perform load testing.
-
-
-
