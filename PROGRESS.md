@@ -15,7 +15,7 @@ Commit after every class. Tag every Friday: `git tag week-N && git push origin w
 - [✔️] Streaming, timeouts, retry, and deterministic grounded extractor fallback
 - [✔️] Exact-match caching and semantic caching (Redis / in-memory)
 - [✔️] Docker Compose (API + Postgres/pgvector + Redis + Frontend) configured
-- [] CI workflow in .github/workflows/ci.yml
+- [✔️] CI workflow in .github/workflows/ci.yml
 - [x] Tag week-2 ready
 
 ## Week 3 (tag week-3 by Fri 6 Nov)
@@ -32,3 +32,4 @@ Commit after every class. Tag every Friday: `git tag week-N && git push origin w
 | 2026-10-22 | Implemented full RevCount backend, exact & semantic caching, PyMuPDF RAG, safe SQL analytics, Results-Day warming, React dashboard, automated tests, and evaluation benchmark | Phase 1-9 Done |
 | 03 Nov 2026 | Streaming /chat, safe retries, fallback model, cost log, GET /usage | 5564ace |
 | 03 Nov 2026 | Docker Compose (API + pgvector), /ready route, .dockerignore | pending |
+| 04 Nov 2026 | CI workflow (test + docker-smoke), pre-commit hooks, deployed to Render, live link in README | pending |

@@ -1,3 +1,7 @@
+[![CI](https://github.com/vanishikhak27/RevCount/actions/workflows/ci.yml/badge.svg)](https://github.com/vanishikhak27/RevCount/actions/workflows/ci.yml)
+
+**Live:**  https://revcount.onrender.com · first request after 15 idle minutes takes about a minute (free tier)
+
 # RevCount
 
 ## Product
@@ -96,6 +100,7 @@ curl localhost:8000/ready
 
 ## Live link
 <Added in Week 2>
+https://revcount.onrender.com
 
 ## Run with Docker Compose
 
